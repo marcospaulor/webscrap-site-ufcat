@@ -11,7 +11,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 # Inicialize o aplicativo Firebase
-cred = credentials.Certificate("./database/servicos-ufcat-app-firebase-adminsdk-wf4o4-7becca3684.json")
+# cred = credentials.Certificate("./database/servicos-ufcat-app-firebase-adminsdk-wf4o4-7becca3684.json")
+cred = credentials.Certificate("firebase_credentials.json")
 firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://servicos-ufcat-app-default-rtdb.firebaseio.com/'
 })
