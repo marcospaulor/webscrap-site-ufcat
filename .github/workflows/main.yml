@@ -48,12 +48,22 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests beautifulsoup4 firebase-admin selenium
 
+      # # Set up Firebase credentials
+      # - name: Set up Firebase credentials
+      #   env:
+      #     FIREBASE_CREDENTIALS: ${{ vars.FIREBASE_CREDENTIALS }}
+      #   run: |
+      #     echo "$FIREBASE_CREDENTIALS" | base64 -d > firebase_credentials.json
+      #     cat firebase_credentials.json
       # Set up Firebase credentials
       - name: Set up Firebase credentials
         env:
           FIREBASE_CREDENTIALS: ${{ vars.FIREBASE_CREDENTIALS }}
         run: |
+          echo "Conteúdo da variável FIREBASE_CREDENTIALS (base64):"
+          echo "::debug::FIREBASE_CREDENTIALS=$FIREBASE_CREDENTIALS"
           echo "$FIREBASE_CREDENTIALS" | base64 -d > firebase_credentials.json
+          echo "Conteúdo do arquivo firebase_credentials.json:"
           cat firebase_credentials.json
 
       # Run the scraping script
