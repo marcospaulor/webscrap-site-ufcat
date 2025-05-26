@@ -8,6 +8,7 @@ on:
 jobs:
   scrape:
     runs-on: ubuntu-latest
+    environment: FIREBASE_CREDENTIALS
 
     steps:
       # Check out the repository code
