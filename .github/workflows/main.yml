@@ -82,22 +82,10 @@ jobs:
       #     fi
       #     echo "Firebase credentials file is valid JSON"
 
-      - name: Set up Firebase credentials
-        env:
-          FIREBASE_CREDENTIALS: ${{ vars.FIREBASE_CREDENTIALS }}
+      # Download Firebase credentials from raw URL stored in secrets
+      - name: Download Firebase credentials
         run: |
-          if [ -z "$FIREBASE_CREDENTIALS" ]; then
-            echo "Error: FIREBASE_CREDENTIALS is empty. Please configure the secret in GitHub Actions."
-            exit 1
-          fi
-          curl -s "$FIREBASE_CREDENTIALS" -o firebase_credentials.json
-          if [ ! -s firebase_credentials.json ]; then
-            echo "Error: Failed to fetch Firebase credentials or file is empty"
-            exit 1
-          fi
-          # Validate JSON
-          python -c "import json; json.load(open('firebase_credentials.json')); print('Firebase credentials JSON is valid')"
-          echo "Firebase credentials saved successfully"
+          curl -sSL "${{ secrets.FIREBASE_CREDENTIALS }}" -o firebase_credentials.json
 
       # Run the scraping script
       - name: Run scraping script
