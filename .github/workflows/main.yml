@@ -58,6 +58,8 @@ jobs:
             exit 1
           fi
           echo "FIREBASE_CREDENTIALS secret is present"
+          # Depuração: exibe o comprimento da string do segredo (sem revelar o conteúdo)
+          echo "Length of FIREBASE_CREDENTIALS: ${#FIREBASE_CREDENTIALS}"
 
       # Cria o arquivo de credenciais do Firebase
       - name: Create Firebase credentials file
@@ -76,16 +78,6 @@ jobs:
           else
             echo "Error: Firebase credentials file is empty"
             exit 1
-          fi
-
-      # Debug: Verifica o conteúdo do arquivo de credenciais (apenas primeiras linhas)
-      - name: Debug Firebase credentials file
-        run: |
-          if [ -s ./database/servicos-ufcat-app-firebase-adminsdk-wf4o4-7becca3684.json ]; then
-            echo "Firebase credentials file exists and is non-empty"
-            head -n 2 ./database/servicos-ufcat-app-firebase-adminsdk-wf4o4-7becca3684.json
-          else
-            echo "Firebase credentials file is empty or does not exist"
           fi
 
       # Executa o script Python
