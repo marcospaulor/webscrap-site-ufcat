@@ -53,7 +53,7 @@ jobs:
         env:
           FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
         run: |
-          echo "$FIREBASE_CREDENTIALS" > firebase_credentials.json
+          echo "$FIREBASE_CREDENTIALS" | base64 -d > firebase_credentials.json
 
       # Run the scraping script
       - name: Run scraping script
