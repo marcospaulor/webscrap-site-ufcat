@@ -10,29 +10,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the repository
+      # Faz checkout do código do repositório
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Set up Python
+      # Configura o ambiente Python
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      # Install Chrome and dependencies
+      # Instala o Chrome e dependências necessárias
       - name: Install Chrome and dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y google-chrome-stable unzip jq
 
-      # Get Chrome version
+      # Obtém a versão do Chrome instalada
       - name: Get Chrome version
         run: |
           CHROME_VERSION=$(google-chrome --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
           echo "CHROME_VERSION=$CHROME_VERSION" >> $GITHUB_ENV
 
-      # Install ChromeDriver
+      # Baixa o ChromeDriver compatível com a versão do Chrome
       - name: Install ChromeDriver
         run: |
           CHROMEDRIVER_VERSION=$(curl -sS "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json" | jq -r ".channels.Stable.version")
@@ -42,13 +42,13 @@ jobs:
           sudo mv chromedriver-linux64/chromedriver /usr/bin/chromedriver
           sudo chmod +x /usr/bin/chromedriver
 
-      # Install Python dependencies
+      # Instala dependências do Python
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Check if FIREBASE_CREDENTIALS secret is set
+      # Verifica se o segredo FIREBASE_CREDENTIALS está definido
       - name: Check Firebase credentials secret
         env:
           FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
@@ -59,7 +59,7 @@ jobs:
           fi
           echo "FIREBASE_CREDENTIALS secret is present"
 
-      # Create Firebase credentials file
+      # Cria o arquivo de credenciais do Firebase
       - name: Create Firebase credentials file
         env:
           FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
@@ -67,7 +67,7 @@ jobs:
           mkdir -p ./database
           echo "$FIREBASE_CREDENTIALS" | base64 -d > ./database/servicos-ufcat-app-firebase-adminsdk-wf4o4-7becca3684.json
 
-      # Validate Firebase credentials file
+      # Valida o arquivo de credenciais
       - name: Validate Firebase credentials
         run: |
           if [ -s ./database/servicos-ufcat-app-firebase-adminsdk-wf4o4-7becca3684.json ]; then
@@ -78,12 +78,22 @@ jobs:
             exit 1
           fi
 
-      # Run the Python script
+      # Debug: Verifica o conteúdo do arquivo de credenciais (apenas primeiras linhas)
+      - name: Debug Firebase credentials file
+        run: |
+          if [ -s ./database/servicos-ufcat-app-firebase-adminsdk-wf4o4-7becca3684.json ]; then
+            echo "Firebase credentials file exists and is non-empty"
+            head -n 2 ./database/servicos-ufcat-app-firebase-adminsdk-wf4o4-7becca3684.json
+          else
+            echo "Firebase credentials file is empty or does not exist"
+          fi
+
+      # Executa o script Python
       - name: Run Python script
         run: |
           python main.py
 
-      # Debug Chrome and ChromeDriver versions
+      # Debug: Verifica versões instaladas
       - name: Debug Chrome and ChromeDriver versions
         run: |
           google-chrome --version
