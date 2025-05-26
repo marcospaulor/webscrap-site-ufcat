@@ -20,14 +20,16 @@ jobs:
         with:
           python-version: '3.10'
 
-      # Install Chrome and ChromeDriver
       - name: Install Chrome and ChromeDriver
         run: |
           sudo apt-get update
           sudo apt-get install -y google-chrome-stable
-          CHROME_VERSION=$(google-chrome --version | grep -oE '[0-9]+.[0-9]+.[0-9]+')
+          CHROME_VERSION=$(google-chrome --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
           MAJOR_VERSION=$(echo $CHROME_VERSION | cut -d. -f1)
-          wget "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$MAJOR_VERSION" -O chromedriver_version
+          
+          # Fallback to manually set ChromeDriver version if automatic fetch fails
+          wget -q "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$MAJOR_VERSION" -O chromedriver_version || echo "136.0.0.0" > chromedriver_version
+          
           CHROMEDRIVER_VERSION=$(cat chromedriver_version)
           wget "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
           unzip chromedriver_linux64.zip
