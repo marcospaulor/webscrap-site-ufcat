@@ -2,7 +2,7 @@ name: Daily Web Scraping
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # Runs every day at midnight UTC
+    - cron: '0 3 * * *'  # Runs every day at midnight UTC
   workflow_dispatch:  # Allows manual triggering
 
 jobs:
@@ -47,41 +47,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install requests beautifulsoup4 firebase-admin selenium
-
-      # # Set up Firebase credentials
-      # - name: Set up Firebase credentials
-      #   env:
-      #     FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
-      #   run: |
-      #     echo "$FIREBASE_CREDENTIALS" > firebase_credentials.json
-
-      # # Download Firebase credentials from URL
-      # - name: Download Firebase credentials
-      #   env:
-      #     FIREBASE_CREDENTIALS_URL: ${{ secrets.FIREBASE_CREDENTIALS }}
-      #   run: |
-      #     mkdir -p ./database
-      #     curl -s -f -o ./database/servicos-ufcat-app-firebase-adminsdk-wf4o4-7becca3684.json "$FIREBASE_CREDENTIALS_URL"
-      #     if [ $? -ne 0 ]; then
-      #       echo "Error: Failed to download Firebase credentials from URL"
-      #       exit 1
-      #     fi
-      #     if [ ! -s ./database/servicos-ufcat-app-firebase-adminsdk-wf4o4-7becca3684.json ]; then
-      #       echo "Error: Downloaded Firebase credentials file is empty"
-      #       exit 1
-      #     fi
-      #     echo "Firebase credentials downloaded successfully (size: $(stat -c %s ./database/servicos-ufcat-app-firebase-adminsdk-wf4o4-7becca3684.json) bytes)"
-
-      # # Validate Firebase credentials
-      # - name: Validate Firebase credentials
-      #   run: |
-      #     python -c "import json; json.load(open('./database/servicos-ufcat-app-firebase-adminsdk-wf4o4-7becca3684.json')); print('JSON is valid')"
-      #     if [ $? -ne 0 ]; then
-      #       echo "Error: Firebase credentials file is not valid JSON"
-      #       exit 1
-      #     fi
-      #     echo "Firebase credentials file is valid JSON"
+          pip install requests beautifulsoup4 firebase-admin seleniu
 
       # Download Firebase credentials from raw URL stored in secrets
       - name: Download Firebase credentials
