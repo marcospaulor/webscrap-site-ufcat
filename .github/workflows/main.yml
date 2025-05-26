@@ -24,7 +24,7 @@ jobs:
       - name: Install Chrome and dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y google-chrome-stable unzip
+          sudo apt-get install -y google-chrome-stable unzip jq
 
       # Obtém a versão do Chrome instalada
       - name: Get Chrome version
@@ -35,13 +35,8 @@ jobs:
       # Baixa o ChromeDriver compatível com a versão do Chrome
       - name: Install ChromeDriver
         run: |
-          CHROME_MAJOR_VERSION=$(echo $CHROME_VERSION | cut -d. -f1)
-          # Tenta obter a versão exata do ChromeDriver
-          CHROMEDRIVER_VERSION=$(curl -sS "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_MAJOR_VERSION" || echo "")
-          if [ -z "$CHROMEDRIVER_VERSION" ]; then
-            # Fallback para buscar a versão mais próxima no Chrome for Testing
-            CHROMEDRIVER_VERSION=$(curl -sS "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json" | jq -r ".channels.Stable.version")
-          fi
+          # Obtém a versão exata do ChromeDriver do Chrome for Testing
+          CHROMEDRIVER_VERSION=$(curl -sS "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json" | jq -r ".channels.Stable.version")
           echo "Instalando ChromeDriver versão $CHROMEDRIVER_VERSION"
           wget -q "https://storage.googleapis.com/chrome-for-testing-public/$CHROMEDRIVER_VERSION/linux64/chromedriver-linux64.zip"
           unzip chromedriver-linux64.zip
@@ -62,3 +57,10 @@ jobs:
           mkdir -p ./database
           echo "$FIREBASE_CREDENTIALS" > ./database/servicos-ufcat-app-firebase-adminsdk-wf4o4-7becca3684.json
           python main.py
+
+      # Debug: Verifica versões instaladas
+      - name: Debug Chrome and ChromeDriver versions
+        run: |
+          google-chrome --version
+          chromedriver --version
+          which chromedriver
