@@ -84,7 +84,7 @@ jobs:
 
       - name: Set up Firebase credentials
         env:
-          FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
+          FIREBASE_CREDENTIALS: ${{ vars.FIREBASE_CREDENTIALS }}
         run: |
           if [ -z "$FIREBASE_CREDENTIALS" ]; then
             echo "Error: FIREBASE_CREDENTIALS is empty. Please configure the secret in GitHub Actions."
