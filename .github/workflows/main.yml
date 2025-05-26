@@ -58,8 +58,14 @@ jobs:
             exit 1
           fi
           echo "FIREBASE_CREDENTIALS secret is present"
-          # Depuração: exibe o comprimento da string do segredo (sem revelar o conteúdo)
-          echo "Length of FIREBASE_CREDENTIALS: ${#FIREBASE_CREDENTIALS}"
+          echo "Length of FIREBASE_CREDENTIALS (in characters): ${#FIREBASE_CREDENTIALS}"
+          # Verifica se parece uma string base64 válida (contém apenas caracteres alfanuméricos, +, /, e =)
+          echo "$FIREBASE_CREDENTIALS" | grep -E '^[A-Za-z0-9+/=]+$' > /dev/null
+          if [ $? -eq 0 ]; then
+            echo "FIREBASE_CREDENTIALS appears to be a valid base64 string"
+          else
+            echo "Warning: FIREBASE_CREDENTIALS does not appear to be a valid base64 string"
+          fi
 
       # Cria o arquivo de credenciais do Firebase
       - name: Create Firebase credentials file
@@ -73,8 +79,8 @@ jobs:
       - name: Validate Firebase credentials
         run: |
           if [ -s ./database/servicos-ufcat-app-firebase-adminsdk-wf4o4-7becca3684.json ]; then
-            python -c "import json; json.load(open('./database/servicos-ufcat-app-firebase-adminsdk-wf4o4-7becca3684.json'))"
-            echo "Firebase credentials file is valid JSON"
+            echo "Firebase credentials file has content (size: $(stat -c %s ./database/servicos-ufcat-app-firebase-adminsdk-wf4o4-7becca3684.json) bytes)"
+            python -c "import json; json.load(open('./database/servicos-ufcat-app-firebase-adminsdk-wf4o4-7becca3684.json')); print('JSON is valid')"
           else
             echo "Error: Firebase credentials file is empty"
             exit 1
