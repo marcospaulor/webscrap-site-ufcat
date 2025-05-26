@@ -51,7 +51,7 @@ jobs:
       # Set up Firebase credentials
       - name: Set up Firebase credentials
         env:
-          FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
+          FIREBASE_CREDENTIALS: ${{ vars.FIREBASE_CREDENTIALS }}
         run: |
           echo "$FIREBASE_CREDENTIALS" | base64 -d > firebase_credentials.json
           cat firebase_credentials.json
