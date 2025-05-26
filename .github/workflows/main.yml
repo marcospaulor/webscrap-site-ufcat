@@ -1,42 +1,54 @@
-name: Daily Web Scrape
+name: Daily Web Scraping
 
 on:
   schedule:
-    - cron: '0 3 * * *' # Executa diariamente às 00:00 no horário de Brasília (UTC-3)
+    - cron: '0 3 * * *'  # Runs every day at midnight UTC
+  workflow_dispatch:  # Allows manual triggering
 
 jobs:
   scrape:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
+      # Check out the repository code
+      - name: Checkout code
         uses: actions/checkout@v4
 
+      # Set up Python
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version: '3.10'  # Adjust if you need a different version
 
-      - name: Install system dependencies
+      # Install Chrome and ChromeDriver
+      - name: Install Chrome and ChromeDriver
         run: |
           sudo apt-get update
           sudo apt-get install -y google-chrome-stable
+          CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
+          CHROMEDRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION)
+          wget -O /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
+          sudo unzip /tmp/chromedriver.zip -d /usr/local/bin/
+          sudo chmod +x /usr/local/bin/chromedriver
 
-      - name: Install Python dependencies
+      # Install Python dependencies
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install requests beautifulsoup4 firebase-admin selenium
 
+      # Set up Firebase credentials
       - name: Set up Firebase credentials
         env:
           FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
         run: |
           echo "$FIREBASE_CREDENTIALS" > firebase_credentials.json
 
-      - name: Run web scrape script
-        run: |
-          python main.py
+      # Run the scraping script
+      - name: Run scraping script
+        run: python main.py
 
-      - name: Clean up Firebase credentials
+      # Optional: Clean up credentials file
+      - name: Clean up
         if: always()
-        run: |
-          rm -f firebase_credentials.json
+        run: rm -f firebase_credentials.json
