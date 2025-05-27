@@ -1,100 +1,134 @@
-# WebScrap para Coleta de Dados da UFCAT
+# WebScrap for UFCAT Data Collection
 
-Este projeto é um script de web scraping desenvolvido para coletar dados de notícias, eventos e editais do site da Universidade Federal de Catalão (UFCAT). Os dados coletados são armazenados no banco de dados em tempo real do Firebase.
-
----
-
-## 📋 Funcionalidades
-
-- Coleta automatizada de dados dos seguintes sites:
-  - [Notícias](https://ufcat.edu.br/noticias)
-  - [Eventos](https://ufcat.edu.br/eventos)
-  - [Editais](https://ufcat.edu.br/editais)
-- Extração de informações como título, link, imagem, texto alternativo e data.
-- Navegação automática pelas páginas de listagem utilizando o Selenium.
-- Armazenamento dos dados coletados no Firebase Realtime Database.
-- Leitura de dados armazenados no Firebase para validação.
+This project is a web scraping script developed to collect news, events, and notices data from the [Universidade Federal de Catalão (UFCAT)](https://ufcat.edu.br/) website. The collected data is stored in Firebase Realtime Database.
 
 ---
 
-## 🛠 Tecnologias Utilizadas
+## 📋 Features
 
-- **Python** (versão 3.8 ou superior)
-- Bibliotecas:
-  - [BeautifulSoup](https://pypi.org/project/beautifulsoup4/) para análise e extração de dados HTML.
-  - [Selenium](https://pypi.org/project/selenium/) para automação de navegação no site.
-  - [Firebase Admin SDK](https://firebase.google.com/docs/admin/setup) para integração com o Firebase.
+- Automated data collection from the following pages:
+  - [News](https://ufcat.edu.br/noticias)
+  - [Events](https://ufcat.edu.br/eventos)
+  - [Notices](https://ufcat.edu.br/editais)
+- Extraction of information such as title, link, image, alt text, and date.
+- Automated navigation through listing pages using Selenium.
+- Storage of collected data in Firebase Realtime Database.
+- Retrieval of stored data from Firebase for validation.
 
 ---
 
-## 📂 Estrutura do Projeto
+## 🛠 Technologies Used
+
+- **Python** (version 3.8 or higher)
+- Libraries:
+  - [BeautifulSoup](https://pypi.org/project/beautifulsoup4/) for HTML parsing and data extraction.
+  - [Selenium](https://pypi.org/project/selenium/) for automated browser navigation.
+  - [Firebase Admin SDK](https://firebase.google.com/docs/admin/setup) for Firebase integration.
+
+---
+
+## 📂 Project Structure
 
 ```plaintext
-├── database/
-│   └── servicos-ufcat-app-firebase-adminsdk-wf4o4-7becca3684.json  # Credenciais do Firebase
-├── webscrap.py                                                      # Script principal
-└── README.md    
+├── .github/
+│   └── workflows/
+│       └── main.yml        # GitHub Actions workflow for deployment automation
+├── webscrap.py             # Main script
+└── README.md               # Project documentation
 ```
-## 🚀 Como Executar
 
-### 1. Pré-requisitos
+---
 
-Certifique-se de ter o seguinte configurado no seu ambiente:
+## 🚀 How to Run
 
-- Python 3.8 ou superior.
-- Google Chrome instalado.
-- [Chromedriver](https://chromedriver.chromium.org/downloads) compatível com sua versão do Google Chrome.
-- Arquivo de credenciais do Firebase (`servicos-ufcat-app-firebase-adminsdk-*.json`).
+### 1. Prerequisites
 
-Instale as dependências do Python:
+Ensure the following are set up in your environment:
+
+- Python 3.8 or higher.
+- Google Chrome installed.
+- [Chromedriver](https://chromedriver.chromium.org/downloads) compatible with your Google Chrome version.
+- Firebase credentials JSON file (stored securely, e.g., as a GitHub secret for Actions).
+
+Install the required Python dependencies:
 
 ```bash
 pip install requests beautifulsoup4 selenium firebase-admin
 ```
-2. Configuração do Firebase
-No console do Firebase, configure o Realtime Database com uma URL no formato:
+
+### 2. Firebase Configuration
+
+In the Firebase Console, set up a Realtime Database with a URL in the format:
 
 ```bash
-https://<nome-do-projeto>.firebaseio.com/
+https://<project-name>.firebaseio.com/
 ```
-Baixe o arquivo de credenciais JSON do Firebase e salve na pasta database/.
 
-3. Executando o Script
-Execute o script principal:
+Ensure the Firebase credentials JSON is securely configured (e.g., as a GitHub secret for use in GitHub Actions).
+
+### 3. Running Locally
+
+To run the script locally, execute the main script:
+
 ```bash
-python main.py
+python webscrap.py
 ```
-O script realizará as seguintes ações:
 
-Coletará dados de cada site definido no dicionário self.urls.
-Armazenará os dados coletados no Firebase.
-Encerrará o WebDriver após concluir o scraping.
+The script will:
+- Collect data from the specified URLs in the script's `self.urls` dictionary.
+- Store the collected data in Firebase Realtime Database.
+- Close the WebDriver after completing the scraping process.
 
-🗂 Estrutura dos Dados
-Os dados armazenados no Firebase possuem o seguinte formato JSON:
+### 4. Deployment with GitHub Actions
+
+This project uses GitHub Actions for automated deployment. The workflow is defined in `.github/workflows/main.yml`. The script is executed automatically based on the configured triggers (e.g., push to the main branch or scheduled runs). The Firebase credentials are securely accessed via GitHub secrets.
+
+To set up GitHub Actions:
+- Store the Firebase credentials JSON as a GitHub secret (e.g., `FIREBASE_CREDENTIALS`).
+- Configure the `main.yml` workflow file to install dependencies, set up Chromedriver, and run `webscrap.py`.
+
+---
+
+## 🗂 Data Structure
+
+The data stored in Firebase follows this JSON format:
 
 ```json
 {
-  "type": "noticia",
+  "type": "news",
   "link": "https://ufcat.edu.br/noticia/exemplo",
-  "title": "Título da Notícia",
+  "title": "News Title",
   "date": "DD/MM/YYYY",
-  "image_url": "https://ufcat.edu.br/imagem.jpg",
-  "alt_text": "Descrição da imagem"
+  "image_url": "https://ufcat.edu.br/image.jpg",
+  "alt_text": "Image description"
 }
 ```
-⚠️ Observações
-Este script foi desenvolvido para funcionar especificamente com o site da UFCAT. Alterações na estrutura do site podem exigir ajustes no código.
-O Selenium utiliza um WebDriver para navegação, sendo necessário instalar a versão correta do Chromedriver para seu navegador.
 
-🤝 Contribuição
-Sinta-se à vontade para contribuir com melhorias no código. Sugestões, relatórios de bugs e pull requests são bem-vindos.
+---
 
-📜 Licença
-Este projeto está licenciado sob a licença MIT. Consulte o arquivo LICENSE para mais detalhes.
+## ⚠️ Notes
 
-📞 Contato
-Se tiver dúvidas ou precisar de ajuda, entre em contato:
+- This script is tailored for the UFCAT website. Changes to the website's structure may require code adjustments.
+- Selenium requires a compatible Chromedriver version for your browser.
+- Ensure Firebase credentials are securely managed and not exposed in the repository.
 
-Desenvolvedor: Marcos Paulo Rodrigues
-E-mail: dev.silva.marcos@gmail.com
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Feel free to submit suggestions, bug reports, or pull requests to improve the project.
+
+---
+
+## 📜 License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+---
+
+## 📞 Contact
+
+For questions or assistance, reach out to:
+
+**Developer**: Marcos Paulo Rodrigues  
+**Email**: dev.silva.marcos@gmail.com
