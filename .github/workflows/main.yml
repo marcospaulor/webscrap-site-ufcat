@@ -32,19 +32,24 @@ jobs:
         run: |
           CHROME_VERSION=$(google-chrome --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
           echo "CHROME_VERSION=$CHROME_VERSION" >> $GITHUB_ENV
+          echo "Chrome version: $CHROME_VERSION"
 
-      # Install ChromeDriver matching Chrome version
+      # Install ChromeDriver
       - name: Install ChromeDriver
         run: |
-          # Use the major version of Chrome to find a compatible ChromeDriver
           CHROME_MAJOR_VERSION=$(echo "$CHROME_VERSION" | cut -d'.' -f1)
-          CHROMEDRIVER_VERSION=$(curl -sS "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_MAJOR_VERSION}")
-          if [ -z "$CHROMEDRIVER_VERSION" ]; then
-            echo "Error: Could not find ChromeDriver version for Chrome major version $CHROME_MAJOR_VERSION"
-            exit 1
+          # Try to get ChromeDriver version from chrome-for-testing
+          CHROMEDRIVER_VERSION=$(curl -sS "https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_${CHROME_MAJOR_VERSION}")
+          if [ -z "$CHROMEDRIVER_VERSION" ] || [[ "$CHROMEDRIVER_VERSION" == *"Error"* ]]; then
+            echo "Warning: Could not find ChromeDriver version for Chrome major version $CHROME_MAJOR_VERSION. Falling back to Chrome version $CHROME_VERSION"
+            CHROMEDRIVER_VERSION="$CHROME_VERSION"
           fi
           echo "Instalando ChromeDriver versão $CHROMEDRIVER_VERSION"
-          wget -q "https://storage.googleapis.com/chrome-for-testing-public/$CHROMEDRIVER_VERSION/linux64/chromedriver-linux64.zip"
+          wget -q "https://storage.googleapis.com/chrome-for-testing-public/$CHROMEDRIVER_VERSION/linux64/chromedriver-linux64.zip" || {
+            echo "Error: Failed to download ChromeDriver $CHROMEDRIVER_VERSION. Trying latest stable version."
+            CHROMEDRIVER_VERSION=$(curl -sS "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json" | jq -r ".channels.Stable.version")
+            wget -q "https://storage.googleapis.com/chrome-for-testing-public/$CHROMEDRIVER_VERSION/linux64/chromedriver-linux64.zip"
+          }
           unzip chromedriver-linux64.zip
           sudo mv chromedriver-linux64/chromedriver /usr/bin/chromedriver
           sudo chmod +x /usr/bin/chromedriver
